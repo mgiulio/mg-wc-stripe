@@ -302,15 +302,6 @@ class Striper extends WC_Payment_Gateway
 		$this->url['assets'] = $this->url['plugin_dir'] . 'assets/';
 	}
 	
-	private function get_template($template_name, $args = array()) {
-		wc_get_template(
-			"$template_name.php",
-			$args,
-			'striper', 
-			$this->path['plugin_dir'] . 'templates/'
-		);
-	}
-
 }
 
 //add_action('wp_ajax_capture_striper'     ,  'striper_order_status_completed');
