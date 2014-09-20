@@ -27,12 +27,14 @@ require(dirname(__FILE__) . '/Stripe/ApiConnectionError.php');
 require(dirname(__FILE__) . '/Stripe/AuthenticationError.php');
 require(dirname(__FILE__) . '/Stripe/CardError.php');
 require(dirname(__FILE__) . '/Stripe/InvalidRequestError.php');
+require(dirname(__FILE__) . '/Stripe/RateLimitError.php');
 
 // Plumbing
 require(dirname(__FILE__) . '/Stripe/Object.php');
 require(dirname(__FILE__) . '/Stripe/ApiRequestor.php');
 require(dirname(__FILE__) . '/Stripe/ApiResource.php');
 require(dirname(__FILE__) . '/Stripe/SingletonApiResource.php');
+require(dirname(__FILE__) . '/Stripe/AttachedObject.php');
 require(dirname(__FILE__) . '/Stripe/List.php');
 
 // Stripe API Resources
@@ -45,8 +47,12 @@ require(dirname(__FILE__) . '/Stripe/Customer.php');
 require(dirname(__FILE__) . '/Stripe/Invoice.php');
 require(dirname(__FILE__) . '/Stripe/InvoiceItem.php');
 require(dirname(__FILE__) . '/Stripe/Plan.php');
+require(dirname(__FILE__) . '/Stripe/Subscription.php');
 require(dirname(__FILE__) . '/Stripe/Token.php');
 require(dirname(__FILE__) . '/Stripe/Coupon.php');
 require(dirname(__FILE__) . '/Stripe/Event.php');
 require(dirname(__FILE__) . '/Stripe/Transfer.php');
 require(dirname(__FILE__) . '/Stripe/Recipient.php');
+require(dirname(__FILE__) . '/Stripe/Refund.php');
+require(dirname(__FILE__) . '/Stripe/ApplicationFee.php');
+require(dirname(__FILE__) . '/Stripe/ApplicationFeeRefund.php');
