@@ -52,6 +52,7 @@ None at this time
 * Code cleanup
 * Remotion of AVS checks
 * Rationalization of settings
+* Removal of payment profile creation
 = 0.29 =
 * Fixing bug where Striper is not the payment type selected.
 = 0.28 =

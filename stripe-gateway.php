@@ -50,7 +50,6 @@ class Striper extends WC_Payment_Gateway
 		$this->publishable_key    = $this->usesandboxapi ? $this->testPublishableKey : $this->livePublishableKey;
         $this->secret_key         = $this->usesandboxapi ? $this->testApiKey : $this->liveApiKey;
         
-		$this->useUniquePaymentProfile = $this->get_option('enable_unique_profile') == 'yes';
         $this->capture            = $this->get_option('capture') == 'yes';
 
         // tell WooCommerce to save options
@@ -162,12 +161,6 @@ class Striper extends WC_Payment_Gateway
                 'label'       => __('Enable Authorization & Capture', 'striper'),
                 'default'     => 'no'
             ),
-            'enable_unique_profile' => array(
-                'title'       => __('Enable Payment Profile Creation', 'striper'),
-                'type'        => 'checkbox',
-                'label'       => __('Use this to always create a Payment Profile in Stripe (always creates new profile, regardless of logged in user), and associate the charge with the profile. This allows you more easily identify order, credit, or even make an additional charge (from Stripe admin) at a later date.', 'striper'),
-                'default'     => 'no'
-            ),
 			'alternate_imageurl' => array(
                 'title'       => __('Alternate Image to display on checkout', 'striper'),
                 'type'        => 'text',
@@ -192,37 +185,16 @@ class Striper extends WC_Payment_Gateway
 	protected function send_to_stripe() {
 		Stripe::setApiKey($this->secret_key);
 
-		// Get the credit card details submitted by the form
 		$data = $this->get_request_data();
 
-		// Create the charge on Stripe's servers - this will charge the user's card
 		try {
-			if($this->useUniquePaymentProfile) {
-				// Create the user as a customer on Stripe servers
-              $customer = Stripe_Customer::create(array(
-                "email" => $data['card']['billing_email'],
-                "description" => $data['card']['name'],
-                "card"  => $data['token']
-              ));
-              // Create the charge on Stripe's servers - this will charge the user's card
-
-            $charge = Stripe_Charge::create(array(
-              "amount"      => $data['amount'], // amount in cents
-              "currency"    => $data['currency'],
-              "card"        => $customer->default_card,
-              "description" => $data['card']['name'],
-              "customer"    => $customer->id,
-              "capture"     => !$this->capture,
-            ));
-			} else {
-				$charge = Stripe_Charge::create(array(
-					'amount' => $data['amount'], // amount in cents
-					'currency' => $data['currency'],
-					'card' => $data['token'],
-					'description' => $data['card']['name'],
-					'capture' => !$this->capture
-				));
-			}
+			$charge = Stripe_Charge::create(array(
+				'amount' => $data['amount'],
+				'currency' => $data['currency'],
+				'card' => $data['token'],
+				'description' => $data['card']['name'],
+				'capture' => !$this->capture
+			));
         
 			$this->transactionId = $charge['id'];
 
