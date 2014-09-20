@@ -180,7 +180,7 @@ class Striper extends WC_Payment_Gateway
 
 	protected function send_to_stripe() {
 		if (!class_exists('Stripe'))
-			require_once 'includes/lib/stripe-php/lib/Stripe.php';
+			require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
 
 		Stripe::setApiKey($this->secret_key);
 
@@ -295,7 +295,7 @@ class Striper extends WC_Payment_Gateway
   private function setup_paths_and_urls() {
 		$this->path['plugin_file'] = __FILE__;
 		$this->path['plugin_dir'] = untrailingslashit(plugin_dir_path(__FILE__));
-		//$this->path['includes'] = $this->path['plugin_dir'] . 'includes/';
+		$this->path['includes'] = $this->path['plugin_dir'] . 'includes/';
 		
 		$this->url['plugin_dir'] = plugin_dir_url(__FILE__);
 		$this->url['assets'] = $this->url['plugin_dir'] . 'assets/';
@@ -324,7 +324,7 @@ function striper_order_status_completed($order_id = null)
   if($authcap)
   {
 	if (!class_exists('Stripe'))
-		require_once 'includes/lib/stripe-php/lib/Stripe.php';
+		require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
 		
     Stripe::setApiKey(get_post_meta( $order_id, 'key', true));
     try
