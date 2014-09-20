@@ -180,7 +180,7 @@ class Striper extends WC_Payment_Gateway
 
 	protected function send_to_stripe() {
 		if (!class_exists('Stripe'))
-			require_once("lib/stripe-php/lib/Stripe.php");
+			require_once 'includes/lib/stripe-php/lib/Stripe.php';
 
 		Stripe::setApiKey($this->secret_key);
 
@@ -324,7 +324,7 @@ function striper_order_status_completed($order_id = null)
   if($authcap)
   {
 	if (!class_exists('Stripe'))
-		require_once("lib/stripe-php/lib/Stripe.php");
+		require_once 'includes/lib/stripe-php/lib/Stripe.php';
 		
     Stripe::setApiKey(get_post_meta( $order_id, 'key', true));
     try
