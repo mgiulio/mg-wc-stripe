@@ -50,6 +50,8 @@ None at this time
 * Use wc_add_notice() instead of deprecated $woocommerce->add_error()
 * Security checks to prevent direct access to plugin files
 * Code cleanup
+* Remotion of AVS checks
+* Rationalization of settings
 = 0.29 =
 * Fixing bug where Striper is not the payment type selected.
 = 0.28 =
