@@ -53,6 +53,7 @@ None at this time
 * Remotion of AVS checks
 * Rationalization of settings
 * Removal of payment profile creation
+* Enhancement: Delete settings option from db on plugin uninstall
 = 0.29 =
 * Fixing bug where Striper is not the payment type selected.
 = 0.28 =
