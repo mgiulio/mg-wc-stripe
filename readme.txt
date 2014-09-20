@@ -33,7 +33,6 @@ Using the wc filter 'woocommerce_credit_card_form_fields'. must preserve fields
 7. Enter the settings that you would like you to use
 
 == Future Plans ==
-Add Subscriptions to eliminate the need for WooSubscriptions.
 
 == Frequently Asked Questions ==
 None at this time
