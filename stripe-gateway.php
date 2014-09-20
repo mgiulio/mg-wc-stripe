@@ -1,10 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if (!class_exists('Stripe')) {
-    require_once("lib/stripe-php/lib/Stripe.php");
-}
-
 class Striper extends WC_Payment_Gateway
 {
 	private $version = '0.30';
@@ -183,6 +179,9 @@ class Striper extends WC_Payment_Gateway
     }
 
 	protected function send_to_stripe() {
+		if (!class_exists('Stripe'))
+			require_once("lib/stripe-php/lib/Stripe.php");
+
 		Stripe::setApiKey($this->secret_key);
 
 		$data = $this->get_request_data();
@@ -324,6 +323,9 @@ function striper_order_status_completed($order_id = null)
   $authcap = get_post_meta( $order_id, 'auth_capture', true);
   if($authcap)
   {
+	if (!class_exists('Stripe'))
+		require_once("lib/stripe-php/lib/Stripe.php");
+		
     Stripe::setApiKey(get_post_meta( $order_id, 'key', true));
     try
     {

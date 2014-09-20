@@ -54,6 +54,7 @@ None at this time
 * Rationalization of settings
 * Removal of payment profile creation
 * Enhancement: Delete settings option from db on plugin uninstall
+* Enhancement: speedup: load Stripe lib only when needed
 = 0.29 =
 * Fixing bug where Striper is not the payment type selected.
 = 0.28 =
