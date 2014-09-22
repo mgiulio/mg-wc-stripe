@@ -123,7 +123,7 @@ class Striper extends WC_Payment_Gateway
                 'title'       => __('Enable/Disable', 'striper'),
                 'type'        => 'checkbox',
                 'label'       => __('Enable Credit Card Payment', 'striper'),
-                'default'     => 'yes'
+                'default'     => 'no'
             ),
 			'title' => array(
                 'title'       => __('Title', 'striper'),
