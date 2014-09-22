@@ -292,12 +292,12 @@ class Striper extends WC_Payment_Gateway
     return false;
   }
   
-  private function setup_paths_and_urls() {
-		$this->path['plugin_file'] = __FILE__;
-		$this->path['plugin_dir'] = untrailingslashit(plugin_dir_path(__FILE__));
+	private function setup_paths_and_urls() {
+		$this->path['plugin_file'] = trailingslashit(dirname(dirname(__FILE__))) . 'plugin.php';
+		$this->path['plugin_dir'] = trailingslashit(plugin_dir_path($this->path['plugin_file']));
 		$this->path['includes'] = $this->path['plugin_dir'] . 'includes/';
 		
-		$this->url['plugin_dir'] = plugin_dir_url(__FILE__);
+		$this->url['plugin_dir'] = trailingslashit(plugin_dir_url($this->path['plugin_file']));
 		$this->url['assets'] = $this->url['plugin_dir'] . 'assets/';
 	}
 	
