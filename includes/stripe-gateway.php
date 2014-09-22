@@ -53,8 +53,6 @@ class Striper extends WC_Payment_Gateway
 			$this->enabled = false;
 		}
         
-        $this->capture            = $this->get_option('capture') == 'yes';
-
         // tell WooCommerce to save options
         add_action('woocommerce_update_options_payment_gateways_' . $this->id , array($this, 'process_admin_options'));
         add_action('admin_notices', array($this, 'perform_ssl_check'));
@@ -164,12 +162,6 @@ class Striper extends WC_Payment_Gateway
                 'type'        => 'text',
                 'default'     => ''
             ),
-            'capture' => array(
-                'title'       => __('Auth & Capture', 'striper'),
-                'type'        => 'checkbox',
-                'label'       => __('Enable Authorization & Capture', 'striper'),
-                'default'     => 'no'
-            ),
 			'alternate_imageurl' => array(
                 'title'       => __('Alternate Image to display on checkout', 'striper'),
                 'type'        => 'text',
@@ -205,16 +197,11 @@ class Striper extends WC_Payment_Gateway
 				'currency' => $data['currency'],
 				'card' => $data['token'],
 				'description' => $data['card']['name'],
-				'capture' => !$this->capture
+				'capture' => false
 			));
         
 			$this->transactionId = $charge['id'];
 
-			//Save data for the "Capture"
-			update_post_meta( $this->order->id, 'transaction_id', $this->transactionId);
-			update_post_meta( $this->order->id, 'key', $this->secret_key);
-			update_post_meta( $this->order->id, 'auth_capture', $this->capture);
-			
 			return true;
 
 		} catch(Stripe_Error $e) {
@@ -315,56 +302,3 @@ class Striper extends WC_Payment_Gateway
 	}
 	
 }
-
-//add_action('wp_ajax_capture_striper'     ,  'striper_order_status_completed');
-
-function striper_order_status_completed($order_id = null)
-{
-  global $woocommerce;
-  if (!$order_id)
-      $order_id = $_POST['order_id'];
-
-  $data = get_post_meta( $order_id );
-  $total = $data['_order_total'][0] * 100;
-
-  $params = array();
-  if(isset($_POST['amount']) && $amount = $_POST['amount'])
-  {
-    $params['amount'] = round($amount);
-  }
-
-  $authcap = get_post_meta( $order_id, 'auth_capture', true);
-  if($authcap)
-  {
-	if (!class_exists('Stripe'))
-		require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
-		
-    Stripe::setApiKey(get_post_meta( $order_id, 'key', true));
-    try
-    {
-      $tid = get_post_meta( $order_id, 'transaction_id', true);
-      $ch = Stripe_Charge::retrieve($tid);
-      if($total < $ch->amount)
-      {
-          $params['amount'] = $total;
-      }
-      $ch->capture($params);
-    }
-    catch(Stripe_Error $e)
-    {
-      // There was an error
-      $body = $e->getJsonBody();
-      $err  = $body['error'];
-	  
-	  if ($this->logger)
-			$this->logger->add('striper', 'Stripe Error:' . $err['message']);
-      
-	  wc_add_notice(__('Payment error:', 'striper') . $err['message'], 'error');
-      
-	  return null;
-    }
-   return true;
-  }
-}
-
-add_action('woocommerce_order_status_processing_to_completed',  'striper_order_status_completed' );
