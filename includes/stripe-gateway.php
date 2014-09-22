@@ -39,12 +39,19 @@ class Striper extends WC_Payment_Gateway
         
 		$this->usesandboxapi      = $this->get_option('sandbox') == 'yes';
 		
+		// API keys
         $this->testApiKey 		  = $this->get_option('test_api_key');
         $this->liveApiKey 		  = $this->get_option('live_api_key');
         $this->testPublishableKey = $this->get_option('test_publishable_key');
-        $this->livePublishableKey = get_option('live_publishable_key');
+        $this->livePublishableKey = $this->get_option('live_publishable_key');
+		
 		$this->publishable_key    = $this->usesandboxapi ? $this->testPublishableKey : $this->livePublishableKey;
         $this->secret_key         = $this->usesandboxapi ? $this->testApiKey : $this->liveApiKey;
+		
+		if (empty($this->publishable_key) || empty($this->secret_key)) {
+			add_action('admin_notices', array($this, 'missing_api_keys'));
+			$this->enabled = false;
+		}
         
         $this->capture            = $this->get_option('capture') == 'yes';
 
@@ -56,6 +63,12 @@ class Striper extends WC_Payment_Gateway
 		//add_action('woocommerce_credit_card_form_start', array($this, 'error_box'));
 		add_action('woocommerce_credit_card_form_end', array($this, 'inject_js'));
     }
+	
+	public function missing_api_keys() {
+		?>
+		<div class="error">Striper gateway has been disabled because some Stripe API keys are missing</div>
+		<?php
+	}
 	
 	public function wc_cc_default_args($args, $gateway_id) {
 		if ($gateway_id === $this->id)
