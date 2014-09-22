@@ -11,10 +11,30 @@ License : https://blog.seanvoss.com/product/striper
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-function striper_init_your_gateway() 
-{
-    if (class_exists('WC_Payment_Gateway') && version_compare(WC_VERSION, '2.1', '>='))
-        require_once 'includes/stripe-gateway.php';
+add_action('plugins_loaded', 'striper_check_requirements', 0);
+
+function striper_check_requirements() {
+	if (!(
+		class_exists('WC_Payment_Gateway') && 
+		version_compare(WC_VERSION, '2.1', '>='
+	))) {
+		add_action('admin_notices', 'striper_notice');
+		return;
+	}
+		
+	add_filter('woocommerce_payment_gateways', 'striper_register_gateway');
 }
 
-add_action('plugins_loaded', 'striper_init_your_gateway', 0);
+function striper_notice() {
+	?>
+	<div class="error">Striper gateway didn't register for missing requirements</div>
+	<?php
+}
+
+function striper_register_gateway($class_names) {
+	require_once 'includes/stripe-gateway.php';
+	
+	array_push($class_names, 'Striper');
+    
+	return $class_names;
+}

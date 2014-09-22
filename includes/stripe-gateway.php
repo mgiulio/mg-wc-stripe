@@ -354,11 +354,4 @@ function striper_order_status_completed($order_id = null)
   }
 }
 
-function striper_add_creditcard_gateway($methods)
-{
-    array_push($methods, 'Striper');
-    return $methods;
-}
-
-add_filter('woocommerce_payment_gateways',                      'striper_add_creditcard_gateway');
 add_action('woocommerce_order_status_processing_to_completed',  'striper_order_status_completed' );
