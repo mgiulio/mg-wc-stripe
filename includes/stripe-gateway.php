@@ -48,24 +48,44 @@ class Striper extends WC_Payment_Gateway
 		$this->publishable_key    = $this->usesandboxapi ? $this->testPublishableKey : $this->livePublishableKey;
         $this->secret_key         = $this->usesandboxapi ? $this->testApiKey : $this->liveApiKey;
 		
-		if (empty($this->publishable_key) || empty($this->secret_key)) {
-			add_action('admin_notices', array($this, 'missing_api_keys'));
+		if (empty($this->publishable_key) || empty($this->secret_key))
 			$this->enabled = false;
-		}
         
         // tell WooCommerce to save options
         add_action('woocommerce_update_options_payment_gateways_' . $this->id , array($this, 'process_admin_options'));
-        add_action('admin_notices', array($this, 'perform_ssl_check'));
 		
 		add_action('woocommerce_credit_card_form_args', array($this, 'wc_cc_default_args'), 10, 2); 
 		//add_action('woocommerce_credit_card_form_start', array($this, 'error_box'));
 		add_action('woocommerce_credit_card_form_end', array($this, 'inject_js'));
+		
+		add_action('admin_notices', array($this, 'admin_notices'));
     }
 	
-	public function missing_api_keys() {
-		?>
-		<div class="error">Striper gateway has been disabled because some Stripe API keys are missing</div>
+	public function admin_notices() {
+		$msgs = array();
+		
+		if (empty($this->publishable_key))
+			$msgs[] = "The public key is missing";
+		
+		if (empty($this->secret_key))
+			$msgs[] = "The secret key is missing";
+			
+		if (!$this->usesandboxapi && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
+            $msgs[] = sprintf(
+				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'striper'), 
+				$this->method_title, 
+				admin_url('admin.php?page=wc-settings&tab=checkout')
+			);
+			
+		if (!empty($msgs)) {
+			?>
+			<ul class="error">
+				<?php foreach ($msgs as $msg): ?>
+					<li><?php echo $msg; ?></li>
+				<?php endforeach; ?>
+			</ul>
 		<?php
+		}
 	}
 	
 	public function wc_cc_default_args($args, $gateway_id) {
@@ -112,20 +132,6 @@ class Striper extends WC_Payment_Gateway
 			)
 		);
 	}
-
-    public function perform_ssl_check()
-    {
-         if (!$this->usesandboxapi && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
-            echo 
-				'<div class="error"><p>' . 
-				sprintf(
-					__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'striper'), 
-					$this->method_title, 
-					admin_url('admin.php?page=wc-settings&tab=checkout')
-				) . 
-				'</p></div>'
-			;
-    }
 
     public function init_form_fields()
     {
