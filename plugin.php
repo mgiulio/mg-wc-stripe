@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class mg_wc_Stripe {
 
 	public function __construct() {
+		add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'plugin_action_links'));
 		add_action('plugins_loaded', array($this, 'check_requirements'), 0);
 	}
 	
@@ -42,20 +43,18 @@ class mg_wc_Stripe {
 		<div class="error">Striper gateway didn't register for missing requirements</div>
 		<?php
 	}
-
-	/*
-	public function plugin_action_links( $links ) {
-			$action_links = array(
-				'settings'	=>	'<a href="' . admin_url( 'admin.php?page=wc-settings' ) . '" title="' . esc_attr( __( 'View WooCommerce Settings', 'woocommerce' ) ) . '">' . __( 'Settings', 'woocommerce' ) . '</a>',
-			);
-
-			return array_merge( $action_links, $links );
-		}
-		
-	dtrigger_error(WC_PLUGIN_BASENAME);
-			add_filter('plugin_action_links_' . 'striper/plugin.php', array($this, 'plugin_action_links'));
-	*/
 	
+	public function plugin_action_links($links) {
+		$action_links = array(
+			'settings' => '<a href="' . 
+				admin_url('admin.php?page=wc-settings&tab=checkout&section=striper') . 
+				'" title="' . 
+				esc_attr(__('View Settings', 'striper')) . '">' . __('Settings', 'striper') . '</a>',
+		);
+
+		return array_merge( $action_links, $links);
+	}
+		
 }
 
 new mg_wc_Stripe();
