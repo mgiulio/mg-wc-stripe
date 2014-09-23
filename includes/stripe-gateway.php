@@ -14,9 +14,8 @@ class Striper extends WC_Payment_Gateway
     protected $stripeTestApiKey           = '';
     protected $stripeLiveApiKey           = '';
     protected $publishable_key            = '';
-
-    public function __construct()
-    {
+	
+    public function __construct() {	
 		$this->setup_paths_and_urls();
 		
 		$this->supports[] = 'default_credit_card_form';

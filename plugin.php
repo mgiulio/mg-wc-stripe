@@ -11,30 +11,51 @@ License : https://blog.seanvoss.com/product/striper
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-add_action('plugins_loaded', 'striper_check_requirements', 0);
+class mg_wc_Stripe {
 
-function striper_check_requirements() {
-	if (!(
-		class_exists('WC_Payment_Gateway') && 
-		version_compare(WC_VERSION, '2.1', '>='
-	))) {
-		add_action('admin_notices', 'striper_notice');
-		return;
+	public function __construct() {
+		add_action('plugins_loaded', array($this, 'check_requirements'), 0);
 	}
-		
-	add_filter('woocommerce_payment_gateways', 'striper_register_gateway');
-}
-
-function striper_notice() {
-	?>
-	<div class="error">Striper gateway didn't register for missing requirements</div>
-	<?php
-}
-
-function striper_register_gateway($class_names) {
-	require_once 'includes/stripe-gateway.php';
 	
-	array_push($class_names, 'Striper');
-    
-	return $class_names;
+	public function check_requirements() {
+		if (!(
+			class_exists('WC_Payment_Gateway') && 
+			version_compare(WC_VERSION, '2.1', '>='
+		))) {
+			add_action('admin_notices', array($this, 'notice'));
+			return;
+		}
+			
+		add_filter('woocommerce_payment_gateways', array($this, 'register_gateway'));
+	}
+	
+	public function register_gateway($class_names) {
+		require_once 'includes/stripe-gateway.php';
+		
+		array_push($class_names, 'Striper');
+		
+		return $class_names;
+	}
+
+	public function notice() {
+		?>
+		<div class="error">Striper gateway didn't register for missing requirements</div>
+		<?php
+	}
+
+	/*
+	public function plugin_action_links( $links ) {
+			$action_links = array(
+				'settings'	=>	'<a href="' . admin_url( 'admin.php?page=wc-settings' ) . '" title="' . esc_attr( __( 'View WooCommerce Settings', 'woocommerce' ) ) . '">' . __( 'Settings', 'woocommerce' ) . '</a>',
+			);
+
+			return array_merge( $action_links, $links );
+		}
+		
+	dtrigger_error(WC_PLUGIN_BASENAME);
+			add_filter('plugin_action_links_' . 'striper/plugin.php', array($this, 'plugin_action_links'));
+	*/
+	
 }
+
+new mg_wc_Stripe();
