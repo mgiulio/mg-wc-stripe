@@ -1,13 +1,13 @@
 jQuery(function($) {
 		 
-	Stripe.setPublishableKey(striperCfg.publishableKey);
+	Stripe.setPublishableKey(mgStripeCfg.publishableKey);
 		
     var 
 		checkoutForm = $('form.checkout'),
 		stripeTokenHiddenInput = $('<input type="hidden" name="stripeToken">')//,
 		errorBox = (function() {
 			var 
-				box = $('<ol id="striper-errorbox"></ol>')
+				box = $('<ol id="mg-stripe-errorbox"></ol>')
 			;
 			return {
 				hide: function() {
@@ -18,7 +18,7 @@ jQuery(function($) {
 					return this;
 				},
 				show: function() {
-					box.prependTo('#striper-cc-form');
+					box.prependTo('#' + mgStripeCfg.gatewayId + '-cc-form');
 				},
 				errors: function() {
 					return box.children().length > 0;
@@ -27,7 +27,7 @@ jQuery(function($) {
 		})()
 	;
 
-	$('form.checkout').on('checkout_place_order_' + striperCfg.gatewayId, getStripeToken);
+	$('form.checkout').on('checkout_place_order_' + mgStripeCfg.gatewayId, getStripeToken);
 	$('body').on('click', '#place_order, form.checkout input:submit', function() { /* Make sure there's not an old token on the form*/ stripeTokenHiddenInput.detach(); });
 	/* $('body').on('click', '#place_order,form#order_review input:submit', function(){ // Make sure there's not an old token on the form createStripeToken(); return false; }); */
 	
@@ -42,18 +42,18 @@ jQuery(function($) {
 			return true;
 		}
 			
-		var cardNumber = $('#' + striperCfg.gatewayId + '-card-number').val();
+		var cardNumber = $('#' + mgStripeCfg.gatewayId + '-card-number').val();
 		if (!$.payment.validateCardNumber(cardNumber))
 			errorBox.push('Invalid credit card number');
 		
 		var 
-			expiryString = $('#' + striperCfg.gatewayId + '-card-expiry').val(),
+			expiryString = $('#' + mgStripeCfg.gatewayId + '-card-expiry').val(),
 			expiryDate = $.payment.cardExpiryVal(expiryString)
 		;
 		if (!$.payment.validateCardExpiry(expiryDate.month, expiryDate.year))
 			errorBox.push('Ivalidy credit card expiry date');
 			
-		var cvc = $('#' + striperCfg.gatewayId + '-card-cvc').val();
+		var cvc = $('#' + mgStripeCfg.gatewayId + '-card-cvc').val();
 		if (cvc.length > 0)
 			if (!$.payment.validateCardCVC(cvc))
 				errorBox.push('Invalid credit card CVC');

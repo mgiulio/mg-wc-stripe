@@ -1,11 +1,12 @@
-==== Striper - Stripe Integration for WooCommerce ====
-Contributors: seanvoss, giuliom
-Tags: woocommerce, stripe, payments, free stripe integration
+=== mg wc Stripe ===
+Contributors: giuliom
+Tags: woocommerce, stripe, payments
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 0.30
-Donate link: https://blog.seanvoss.com/shop/striper/
+Stable tag: trunk???
+Donate link: ...
 License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Striper for WooCommerce allows your users to pay via Stripe. 
 
@@ -55,8 +56,10 @@ None at this time
 * Removal of payment profile creation
 * Enhancement: Delete settings option from db on plugin uninstall
 * Enhancement: speedup: load Stripe lib only when needed
+
 = 0.29 =
 * Fixing bug where Striper is not the payment type selected.
+
 = 0.28 =
 * Changing the success url, & removing pass by reference
 = 0.27 =

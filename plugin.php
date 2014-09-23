@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: Striper (Gateway using Stripe.js)
-Plugin URI: http://blog.seanvoss.com/product/striper
-Description: Provides a Credit Card Payment Gateway through Stripe for woo-commerece.
-Version: 0.30
-Author: Sean Voss
-Author URI: https://blog.seanvoss.com/
-License : https://blog.seanvoss.com/product/striper
+Plugin Name: mg wc Stripe
+Plugin URI: http://mgiulio.info/projects/mg-wc-stripe
+Description: Stripe payment gateway for WooCommerce
+Version: 1.0-beta
+Author: Giulio 'mgiulio' Mainardi
+Author URI: http://mgiulio.info
+License: GPL2
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -31,25 +31,25 @@ class mg_wc_Stripe {
 	}
 	
 	public function register_gateway($class_names) {
-		require_once 'includes/stripe-gateway.php';
+		require_once 'includes/gateway.php';
 		
-		array_push($class_names, 'Striper');
+		array_push($class_names, 'mg_Gateway_Stripe');
 		
 		return $class_names;
 	}
 
 	public function notice() {
 		?>
-		<div class="error">Striper gateway didn't register for missing requirements</div>
+		<div class="error">mg Stripe gateway didn't register for missing requirements</div>
 		<?php
 	}
 	
 	public function plugin_action_links($links) {
 		$action_links = array(
 			'settings' => '<a href="' . 
-				admin_url('admin.php?page=wc-settings&tab=checkout&section=striper') . 
+				admin_url('admin.php?page=wc-settings&tab=checkout&section=mg_gateway_stripe') . 
 				'" title="' . 
-				esc_attr(__('View Settings', 'striper')) . '">' . __('Settings', 'striper') . '</a>',
+				esc_attr(__('View Settings', 'striper')) . '">' . __('Settings', 'mg_stripe') . '</a>',
 		);
 
 		return array_merge( $action_links, $links);

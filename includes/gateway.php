@@ -1,9 +1,9 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-class Striper extends WC_Payment_Gateway
+class mg_Gateway_Stripe extends WC_Payment_Gateway
 {
-	private $version = '0.30';
+	private $version = '1.0-beta';
 	private $path;
 	private $url;
 	private $logger = null;
@@ -20,9 +20,9 @@ class Striper extends WC_Payment_Gateway
 		
 		$this->supports[] = 'default_credit_card_form';
 		
-        $this->id = 'striper';
-		$this->method_title = __('Striper', 'striper');
-		$this->method_description = __('Process credit cards with Stripe', 'striper');
+        $this->id = 'mg_stripe';
+		$this->method_title = __('mg Stripe', 'mg_stripe');
+		$this->method_description = __('Process credit cards with Stripe', 'mg_stripe');
         $this->has_fields      = true;
 
         $this->init_form_fields();
@@ -71,7 +71,7 @@ class Striper extends WC_Payment_Gateway
 			
 		if (!$this->usesandboxapi && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
             $msgs[] = sprintf(
-				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'striper'), 
+				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'mg_stripe'), 
 				$this->method_title, 
 				admin_url('admin.php?page=wc-settings&tab=checkout')
 			);
@@ -98,7 +98,7 @@ class Striper extends WC_Payment_Gateway
 		if ($gateway_id !== $this->id)
 			return;
 		?>
-			<ol id="striper-errorbox"></ol>
+			<ol id="mg-stripe-errorbox"></ol>
 		<?php
 	}
 	
@@ -115,7 +115,7 @@ class Striper extends WC_Payment_Gateway
 		);
 		
 		wp_enqueue_script(
-			'striper', 
+			'mg_stripe', 
 			$this->url['assets'] . 'js/striper.js', 
 			array('jquery', 'stripe_js'), 
 			$this->version, 
@@ -123,8 +123,8 @@ class Striper extends WC_Payment_Gateway
 		);
 		
 		wp_localize_script(
-			'striper',
-			'striperCfg',
+			'mg_stripe',
+			'mgStripeCfg',
 			array(
 				'publishableKey' => $this->publishable_key,
 				'gatewayId' => $this->id
@@ -136,53 +136,53 @@ class Striper extends WC_Payment_Gateway
     {
 		$this->form_fields = array(
             'enabled' => array(
-                'title'       => __('Enable/Disable', 'striper'),
+                'title'       => __('Enable/Disable', 'mg_stripe'),
                 'type'        => 'checkbox',
-                'label'       => __('Enable Credit Card Payment', 'striper'),
+                'label'       => __('Enable Credit Card Payment', 'mg_stripe'),
                 'default'     => 'no'
             ),
 			'title' => array(
-                'title'       => __('Title', 'striper'),
+                'title'       => __('Title', 'mg_stripe'),
                 'type'        => 'text',
-                'description' => __('This controls the title which the user sees during checkout.', 'striper'),
-                'default'     => __('Credit Card  with Stripe', 'striper')
+                'description' => __('This controls the title which the user sees during checkout.', 'mg_stripe'),
+                'default'     => __('Credit Card  with Stripe', 'mg_stripe')
             ),
 			'test_api_key' => array(
-                'title'       => __('Stripe API Test Secret key', 'striper'),
+                'title'       => __('Stripe API Test Secret key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
             'test_publishable_key' => array(
-                'title'       => __('Stripe API Test Publishable key', 'striper'),
+                'title'       => __('Stripe API Test Publishable key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
             'live_api_key' => array(
-                'title'       => __('Stripe API Live Secret key', 'striper'),
+                'title'       => __('Stripe API Live Secret key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
             'live_publishable_key' => array(
-                'title'       => __('Stripe API Live Publishable key', 'striper'),
+                'title'       => __('Stripe API Live Publishable key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
 			'alternate_imageurl' => array(
-                'title'       => __('Alternate Image to display on checkout', 'striper'),
+                'title'       => __('Alternate Image to display on checkout', 'mg_stripe'),
                 'type'        => 'text',
-				'description' => __('Use fullly qualified url, served via https', 'striper'),
+				'description' => __('Use fullly qualified url, served via https', 'mg_stripe'),
                 'default'     => ''
             ),
 			'sandbox' => array(
-                'title'       => __('Testing', 'striper'),
+                'title'       => __('Testing', 'mg_stripe'),
                 'type'        => 'checkbox',
-                'label'       => __('Turn on testing with Stripe sandbox', 'striper'),
+                'label'       => __('Turn on testing with Stripe sandbox', 'mg_stripe'),
                 'default'     => 'no'
             ),
 			'logging' => array(
-                'title'       => __('Logging', 'striper'),
+                'title'       => __('Logging', 'mg_stripe'),
                 'type'        => 'checkbox',
-                'label'       => __('Turn on logging to troubleshot problems', 'striper'),
+                'label'       => __('Turn on logging to troubleshot problems', 'mg_stripe'),
                 'default'     => 'no'
             )
        );
@@ -215,9 +215,9 @@ class Striper extends WC_Payment_Gateway
 			$err  = $body['error'];
 		
 			if ($this->logger)
-				$this->logger->add('striper', 'Stripe Error:' . $err['message']);
+				$this->logger->add('mg_stripe', 'Stripe Error:' . $err['message']);
 
-			wc_add_notice(__('Payment error:', 'striper') . $err['message'], 'error');
+			wc_add_notice(__('Payment error:', 'mg_stripe') . $err['message'], 'error');
         
 			return false;
 		}
@@ -240,7 +240,7 @@ class Striper extends WC_Payment_Gateway
         else
         {
           $this->mark_as_failed_payment();
-          wc_add_notice(__('Transaction Error: Could not complete your payment', 'striper'), 'error');
+          wc_add_notice(__('Transaction Error: Could not complete your payment', 'mg_stripe'), 'error');
         }
     }
 
