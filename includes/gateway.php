@@ -1,19 +1,17 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) exit;
 
-class mg_Gateway_Stripe extends WC_Payment_Gateway
-{
+class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	private $version = '1.0-beta';
 	private $path;
 	private $url;
-	private $logger = null;
-    protected $usesandboxapi              = true;
-    protected $order                      = null;
-    protected $transactionId              = null;
-    protected $transactionErrorMessage    = null;
-    protected $stripeTestApiKey           = '';
-    protected $stripeLiveApiKey           = '';
-    protected $publishable_key            = '';
+	private $publishable_key;
+	private $secret_key;
+	private $logger;
+	private $use_sandbox;
+	private $order;
+	private $transactionId;
+	protected $transactionErrorMessage;
 	
     public function __construct() {	
 		$this->setup_paths_and_urls();
@@ -33,16 +31,16 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
 		if ($this->get_option('logging') == 'yes')
 			$logger = new WC_Logger();
         
-		$this->usesandboxapi      = $this->get_option('sandbox') == 'yes';
+		$this->use_sandbox = $this->get_option('sandbox') == 'yes';
 		
 		// API keys
-        $this->testApiKey 		  = $this->get_option('test_api_key');
-        $this->liveApiKey 		  = $this->get_option('live_api_key');
-        $this->testPublishableKey = $this->get_option('test_publishable_key');
-        $this->livePublishableKey = $this->get_option('live_publishable_key');
+        $test_secret_key = $this->get_option('test_secret_key');
+        $test_pub_key = $this->get_option('test_pub_key');
+		$live_secret_key = $this->get_option('live_secret_key');
+        $live_pub_key = $this->get_option('live_pub_key');
 		
-		$this->publishable_key    = $this->usesandboxapi ? $this->testPublishableKey : $this->livePublishableKey;
-        $this->secret_key         = $this->usesandboxapi ? $this->testApiKey : $this->liveApiKey;
+		$this->publishable_key = $this->use_sandbox ? $test_pub_key : $live_pub_key;
+        $this->secret_key = $this->use_sandbox ? $test_secret_key : $live_secret_key;
 		
 		if (empty($this->publishable_key) || empty($this->secret_key))
 			$this->enabled = false;
@@ -66,7 +64,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
 		if (empty($this->secret_key))
 			$msgs[] = "The secret key is missing";
 			
-		if (!$this->usesandboxapi && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
+		if (!$this->use_sandbox && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
             $msgs[] = sprintf(
 				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'mg_stripe'), 
 				$this->method_title, 
@@ -138,22 +136,22 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
                 'label'       => __('Enable Credit Card Payment', 'mg_stripe'),
                 'default'     => 'no'
             ),
-			'test_api_key' => array(
+			'test_secret_key' => array(
                 'title'       => __('Stripe API Test Secret key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
-            'test_publishable_key' => array(
+            'test_pub_key' => array(
                 'title'       => __('Stripe API Test Publishable key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
-            'live_api_key' => array(
+            'live_secret_key' => array(
                 'title'       => __('Stripe API Live Secret key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
             ),
-            'live_publishable_key' => array(
+            'live_pub_key' => array(
                 'title'       => __('Stripe API Live Publishable key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
