@@ -138,12 +138,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
                 'label'       => __('Enable Credit Card Payment', 'mg_stripe'),
                 'default'     => 'no'
             ),
-			'title' => array(
-                'title'       => __('Title', 'mg_stripe'),
-                'type'        => 'text',
-                'description' => __('This controls the title which the user sees during checkout.', 'mg_stripe'),
-                'default'     => __('Credit Card  with Stripe', 'mg_stripe')
-            ),
 			'test_api_key' => array(
                 'title'       => __('Stripe API Test Secret key', 'mg_stripe'),
                 'type'        => 'text',
@@ -163,6 +157,12 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
                 'title'       => __('Stripe API Live Publishable key', 'mg_stripe'),
                 'type'        => 'text',
                 'default'     => ''
+            ),
+			'title' => array(
+                'title'       => __('Title', 'mg_stripe'),
+                'type'        => 'text',
+                'description' => __('This controls the title which the user sees during checkout.', 'mg_stripe'),
+                'default'     => __('Credit Card  with Stripe', 'mg_stripe')
             ),
 			'sandbox' => array(
                 'title'       => __('Testing', 'mg_stripe'),
