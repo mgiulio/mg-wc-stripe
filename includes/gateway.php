@@ -30,9 +30,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
 
         $this->title = $this->get_option('title');
 		
-		$alt_image = $this->get_option('alternate_imageurl');
-        $this->icon = empty($alt_image) ? $this->url['assets'] . 'images/credits.png' : $alt_image;
-		
 		if ($this->get_option('logging') == 'yes')
 			$logger = new WC_Logger();
         
@@ -165,12 +162,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway
             'live_publishable_key' => array(
                 'title'       => __('Stripe API Live Publishable key', 'mg_stripe'),
                 'type'        => 'text',
-                'default'     => ''
-            ),
-			'alternate_imageurl' => array(
-                'title'       => __('Alternate Image to display on checkout', 'mg_stripe'),
-                'type'        => 'text',
-				'description' => __('Use fullly qualified url, served via https', 'mg_stripe'),
                 'default'     => ''
             ),
 			'sandbox' => array(
