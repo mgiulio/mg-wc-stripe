@@ -9,9 +9,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	private $secret_key;
 	private $logger;
 	private $use_sandbox;
-	private $order;
-	private $transactionId;
-	protected $transactionErrorMessage;
 	
     public function __construct() {	
 		$this->setup_paths_and_urls();
@@ -45,13 +42,10 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		if (empty($this->publishable_key) || empty($this->secret_key))
 			$this->enabled = false;
         
-        // tell WooCommerce to save options
         add_action('woocommerce_update_options_payment_gateways_' . $this->id , array($this, 'process_admin_options'));
-		
 		add_action('woocommerce_credit_card_form_args', array($this, 'wc_cc_default_args'), 10, 2); 
 		//add_action('woocommerce_credit_card_form_start', array($this, 'error_box'));
 		add_action('woocommerce_credit_card_form_end', array($this, 'inject_js'));
-		
 		add_action('admin_notices', array($this, 'admin_notices'));
     }
 	
@@ -127,8 +121,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		);
 	}
 
-    public function init_form_fields()
-    {
+    public function init_form_fields() {
 		$this->form_fields = array(
             'enabled' => array(
                 'title'       => __('Enable/Disable', 'mg_stripe'),
@@ -176,115 +169,83 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
             )
        );
     }
+	
+	public function process_payment($order_id) {
+		$result = false;
+		
+		try {
+			$token = isset( $_POST['stripeToken'] ) ? wc_clean( $_POST['stripeToken'] ) : '';
+		
+			if (empty($token))
+				throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript', 'mg_stripe'));
+		
+			$order = wc_get_order($order_id);
+		
+			$charge = $this->charge_user($order);
+			$transaction_id = $charge['id'];
+			
+			$order->payment_complete($transaction_id);
+			WC()->cart->empty_cart();
+			$order->add_order_note(
+				sprintf(
+					"%s payment completed with Transaction Id of '%s'",
+					$this->method_title,
+					$transaction_id
+				)
+			);
+			
+			$result = true;
+        } catch(Stripe_Error $e) {
+			$body = $e->getJsonBody();
+			$error  = $body['error'];
+			$err_msg = __('Stripe error: ', 'mg_Stripe') . $error['message'];
+			
+			$order->add_order_note(
+				sprintf(
+					__("%s Credit Card Payment Failed with message: '%s'", 'mg_stripe'),
+					$this->method_title,
+					$err_msg
+				)
+			);
+			
+			$this->error($err_msgs);
+		} catch(Exception &e) {
+			$this->error($e->getMessage());
+		}
+			
+		return $result ?
+			array(
+                'result' => 'success',
+                'redirect' => $this->get_return_url($order)
+            ) :
+			array(
+				'result' => 'fail',
+				'redirect'=> ''
+			)
+		;
+    }
 
-	protected function send_to_stripe() {
+	private function charge_user($order) {
 		if (!class_exists('Stripe'))
 			require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
 
 		Stripe::setApiKey($this->secret_key);
 
-		$data = $this->get_request_data();
-
-		try {
-			$charge = Stripe_Charge::create(array(
-				'amount' => $data['amount'],
-				'currency' => $data['currency'],
-				'card' => $data['token'],
-				'description' => $data['card']['name'],
-				'capture' => false
-			));
-        
-			$this->transactionId = $charge['id'];
-
-			return true;
-
-		} catch(Stripe_Error $e) {
-			// The card has been declined, or other error
-			$body = $e->getJsonBody();
-			$err  = $body['error'];
-		
-			if ($this->logger)
-				$this->logger->add('mg_stripe', 'Stripe Error:' . $err['message']);
-
-			wc_add_notice(__('Payment error:', 'mg_stripe') . $err['message'], 'error');
-        
-			return false;
-		}
+		$charge = Stripe_Charge::create(array(
+			'amount' => $order->get_total() * 100,
+			'currency' => strtolower(get_woocommerce_currency()),
+			'card' => $token,
+			//'description' => sprintf("Charge for %s", $order->billing_email),
+			'capture' => false
+		));
     }
+	
+	private function error($msg) {
+		if ($this->logger)
+			$this->logger->add('mg_stripe', $msg);
 
-    public function process_payment($order_id)
-    {
-        global $woocommerce;
-        $this->order        = new WC_Order($order_id);
-        if ($this->send_to_stripe())
-        {
-          $this->complete_order();
-
-            $result = array(
-                'result' => 'success',
-                'redirect' => $this->get_return_url($this->order)
-            );
-          return $result;
-        }
-        else
-        {
-          $this->mark_as_failed_payment();
-          wc_add_notice(__('Transaction Error: Could not complete your payment', 'mg_stripe'), 'error');
-        }
-    }
-
-    protected function mark_as_failed_payment()
-    {
-        $this->order->add_order_note(
-            sprintf(
-                "%s Credit Card Payment Failed with message: '%s'",
-                $this->method_title,
-                $this->transactionErrorMessage
-            )
-        );
-    }
-
-    protected function complete_order()
-    {
-        global $woocommerce;
-
-        if ($this->order->status == 'completed')
-            return;
-
-        $this->order->payment_complete();
-        $woocommerce->cart->empty_cart();
-
-        $this->order->add_order_note(
-            sprintf(
-                "%s payment completed with Transaction Id of '%s'",
-                $this->method_title,
-                $this->transactionId
-            )
-        );
-    }
-
-
-  protected function get_request_data()
-  {
-    if ($this->order AND $this->order != null)
-    {
-        return array(
-            "amount"      => (float)$this->order->get_total() * 100,
-            "currency"    => strtolower(get_woocommerce_currency()),
-            "token"       => isset($_POST['stripeToken']) ? $_POST['stripeToken'] : '',
-            "description" => sprintf("Charge for %s", $this->order->billing_email),
-            "card"        => array(
-                "name"            => sprintf("%s %s", $this->order->billing_first_name, $this->order->billing_last_name),
-                "address_line1"   => $this->order->billing_address_1,
-                "address_line2"   => $this->order->billing_address_2,
-                "address_zip"     => $this->order->billing_postcode,
-                "address_state"   => $this->order->billing_state,
-                "address_country" => $this->order->billing_country
-            )
-        );
-    }
-    return false;
-  }
+		wc_add_notice($err_msg, 'error');
+	}
   
 	private function setup_paths_and_urls() {
 		$this->path['plugin_file'] = trailingslashit(dirname(dirname(__FILE__))) . 'plugin.php';
