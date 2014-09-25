@@ -209,7 +209,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			);
 			
 			$this->error($err_msgs);
-		} catch(Exception &e) {
+		} catch(Exception $e) {
 			$this->error($e->getMessage());
 		}
 			
@@ -230,10 +230,15 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
 
 		Stripe::setApiKey($this->secret_key);
+		
+		$currency = get_woocommerce_currency();
+		$amount = $order->get_total();
+		if (!is_zero_decimal_currency($currency))
+			$amount *= 100;
 
 		$charge = Stripe_Charge::create(array(
-			'amount' => $order->get_total() * 100,
-			'currency' => strtolower(get_woocommerce_currency()),
+			'currency' => strtolower($currency),
+			'amount' => $amount,
 			'card' => $token,
 			//'description' => sprintf("Charge for %s", $order->billing_email),
 			'capture' => false
@@ -245,6 +250,26 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$this->logger->add('mg_stripe', $msg);
 
 		wc_add_notice($err_msg, 'error');
+	}
+	
+	private function is_zero_decimal_currency($currency) {
+		return in_array($currency, array(
+			'BIF',
+			'CLP',
+			'DJF',
+			'GNF',
+			'JPY',
+			'KMF',
+			'KRW',
+			'MGA',
+			'PYG',
+			'RWF',
+			'VND',
+			'VUV',
+			'XAF',
+			'XOF',
+			'XPF'
+		));
 	}
   
 	private function setup_paths_and_urls() {
