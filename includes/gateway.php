@@ -263,7 +263,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		if ($this->logger)
 			$this->logger->add('mg_stripe', $msg);
 
-		wc_add_notice($err_msg, 'error');
+		wc_add_notice($msg, 'error');
 	}
 	
 	private function is_zero_decimal_currency($currency) {

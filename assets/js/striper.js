@@ -27,17 +27,24 @@ jQuery(function($) {
 		})()
 	;
 
-	$('form.checkout').on('checkout_place_order_' + mgStripeCfg.gatewayId, getStripeToken);
-	$('body').on('click', '#place_order, form.checkout input:submit', function() { /* Make sure there's not an old token on the form*/ stripeTokenHiddenInput.detach(); });
+	checkoutForm.on(
+		'checkout_place_order_' + mgStripeCfg.gatewayId, 
+		getStripeToken
+	);
+	$('body').on(
+		'click', '#place_order, form.checkout input:submit', 
+		function() { /* Make sure there's not an old token on the form*/ stripeTokenHiddenInput.detach(); }
+	);
 	/* $('body').on('click', '#place_order,form#order_review input:submit', function(){ // Make sure there's not an old token on the form createStripeToken(); return false; }); */
 	
 	function getStripeToken() {
+		console.log('getStripeToken');
 		errorBox.hide();
 		
 		blockUI();
 
 		// Pass if we have a token
-		if ( checkoutForm.find('[name=stripeToken]').length) {
+		if ( checkoutForm.find('[name=stripeToken]').length > 0) {
 			unblockUI();
 			return true;
 		}
@@ -51,7 +58,7 @@ jQuery(function($) {
 			expiryDate = $.payment.cardExpiryVal(expiryString)
 		;
 		if (!$.payment.validateCardExpiry(expiryDate.month, expiryDate.year))
-			errorBox.push('Ivalidy credit card expiry date');
+			errorBox.push('Invalid credit card expiry date');
 			
 		var cvc = $('#' + mgStripeCfg.gatewayId + '-card-cvc').val();
 		if (cvc.length > 0)
