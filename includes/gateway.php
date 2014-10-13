@@ -39,9 +39,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		$this->publishable_key = $this->use_sandbox ? $test_pub_key : $live_pub_key;
         $this->secret_key = $this->use_sandbox ? $test_secret_key : $live_secret_key;
 		
-		if (empty($this->publishable_key) || empty($this->secret_key))
-			$this->enabled = false;
-        
         add_action('woocommerce_update_options_payment_gateways_' . $this->id , array($this, 'process_admin_options'));
 		add_action('woocommerce_credit_card_form_args', array($this, 'wc_cc_default_args'), 10, 2); 
 		//add_action('woocommerce_credit_card_form_start', array($this, 'error_box'));
@@ -52,12 +49,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	public function admin_notices() {
 		$msgs = array();
 		
-		if (empty($this->publishable_key))
-			$msgs[] = "The public key is missing";
-		
-		if (empty($this->secret_key))
-			$msgs[] = "The secret key is missing";
-			
 		if (!$this->use_sandbox && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
             $msgs[] = sprintf(
 				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'mg_stripe'), 
@@ -169,6 +160,29 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
             )
        );
     }
+	
+	public function validate_enabled_field($key) {
+		$prefix = $this->plugin_id . $this->id . '_';
+		
+		if (isset($_POST["{$prefix}sandbox"]))
+			return 
+				empty($_POST["{$prefix}test_pub_key"])
+				||
+				empty($_POST["{$prefix}test_secret_key"])
+				?
+				'no'
+				: $this->validate_checkbox_field($key)
+			;
+		else 
+			return 
+				empty($_POST["{$prefix}live_pub_key"])
+				||
+				empty($_POST["{$prefix}live_secret_key"])
+				?
+				'no'
+				: $this->validate_checkbox_field($key)
+			;
+	}
 	
 	public function process_payment($order_id) {
 		$result = false;
