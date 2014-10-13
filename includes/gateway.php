@@ -117,7 +117,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
             'enabled' => array(
                 'title'       => __('Enable/Disable', 'mg_stripe'),
                 'type'        => 'checkbox',
-                'label'       => __('Enable Credit Card Payment', 'mg_stripe'),
+                'label'       => __('Enable gateway', 'mg_stripe'),
                 'default'     => 'no'
             ),
 			'test_secret_key' => array(
