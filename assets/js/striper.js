@@ -40,14 +40,12 @@ jQuery(function($) {
 	function getStripeToken() {
 		console.log('getStripeToken');
 		errorBox.hide();
-		
-		blockUI();
 
 		// Pass if we have a token
-		if ( checkoutForm.find('[name=stripeToken]').length > 0) {
-			unblockUI();
+		if ( checkoutForm.find('[name=stripeToken]').length > 0)
 			return true;
-		}
+		
+		blockUI();
 			
 		var cardNumber = $('#' + mgStripeCfg.gatewayId + '-card-number').val();
 		if (!$.payment.validateCardNumber(cardNumber))
@@ -86,16 +84,16 @@ jQuery(function($) {
 	
 	function stripeResponseHandler(status, response) {
 		console.log(status, response);
+		
+		unblockUI();
 
 		if (status == 200) {
 			checkoutForm
 				.append(stripeTokenHiddenInput.val(response.id))
 				.submit()
 			;
-		} else {
+		} else
 			errorBox.push(response.error.message).show();
-			unblockUI();
-		}
 	}
 	
 	function blockUI() {
