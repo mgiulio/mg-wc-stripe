@@ -35,7 +35,6 @@ jQuery(function($) {
 		'click', '#place_order, form.checkout input:submit', 
 		function() { /* Make sure there's not an old token on the form*/ stripeTokenHiddenInput.detach(); }
 	);
-	/* $('body').on('click', '#place_order,form#order_review input:submit', function(){ // Make sure there's not an old token on the form createStripeToken(); return false; }); */
 	
 	function getStripeToken() {
 		console.log('getStripeToken');
