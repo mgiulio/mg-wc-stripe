@@ -26,7 +26,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
         $this->title = $this->get_option('title');
 		
 		if ($this->get_option('logging') == 'yes')
-			$logger = new WC_Logger();
+			$this->logger = new WC_Logger();
         
 		$this->use_sandbox = $this->get_option('sandbox') == 'yes';
 		
@@ -211,7 +211,6 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$result = true;
         } catch(Stripe_Error $e) {
 			$body = $e->getJsonBody();
-			trigger_error(print_r($body, true));
 			$error  = $body['error'];
 			$err_msg = __('Stripe error: ', 'mg_Stripe') . $error['message'];
 			
@@ -241,17 +240,18 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
     }
 
 	private function charge_user($order, $token) {
-		trigger_error('charge_user');
-		trigger_error($token);
 		if (!class_exists('Stripe'))
 			require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
 
 		Stripe::setApiKey($this->secret_key);
 		
 		$currency = get_woocommerce_currency();
+		
 		$amount = $order->get_total();
 		if (!$this->is_zero_decimal_currency($currency))
 			$amount *= 100;
+			
+		$this->log("Stripe Charge: key: $this->secret_key, token: $token, amount: $amount $currency");
 
 		$charge = Stripe_Charge::create(array(
 			'currency' => strtolower($currency),
@@ -263,9 +263,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
     }
 	
 	private function error($msg) {
-		if ($this->logger)
-			$this->logger->add('mg_stripe', $msg);
-
+		$this->log($msg);
 		wc_add_notice($msg, 'error');
 	}
 	
@@ -296,6 +294,11 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
 		$this->url['plugin_dir'] = trailingslashit(plugin_dir_url($this->path['plugin_file']));
 		$this->url['assets'] = $this->url['plugin_dir'] . 'assets/';
+	}
+	
+	private function log($msg) {
+		if ($this->logger)
+			$this->logger->add('mg_stripe', $msg);
 	}
 	
 }
