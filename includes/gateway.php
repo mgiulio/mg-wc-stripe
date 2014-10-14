@@ -96,7 +96,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
 		wp_enqueue_script(
 			'mg_stripe', 
-			$this->url['assets'] . 'js/striper.js', 
+			$this->url['assets'] . 'js/script.js', 
 			array('jquery', 'stripe_js'), 
 			$this->version, 
 			true
@@ -195,7 +195,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
 			$order = wc_get_order($order_id);
 		
-			$charge = $this->charge_user($order);
+			$charge = $this->charge_user($order, $token);
 			$transaction_id = $charge['id'];
 			
 			$order->payment_complete($transaction_id);
@@ -211,6 +211,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$result = true;
         } catch(Stripe_Error $e) {
 			$body = $e->getJsonBody();
+			trigger_error(print_r($body, true));
 			$error  = $body['error'];
 			$err_msg = __('Stripe error: ', 'mg_Stripe') . $error['message'];
 			
@@ -222,7 +223,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 				)
 			);
 			
-			$this->error($err_msgs);
+			$this->error($err_msg);
 		} catch(Exception $e) {
 			$this->error($e->getMessage());
 		}
@@ -239,7 +240,9 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		;
     }
 
-	private function charge_user($order) {
+	private function charge_user($order, $token) {
+		trigger_error('charge_user');
+		trigger_error($token);
 		if (!class_exists('Stripe'))
 			require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
 
@@ -247,7 +250,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
 		$currency = get_woocommerce_currency();
 		$amount = $order->get_total();
-		if (!is_zero_decimal_currency($currency))
+		if (!$this->is_zero_decimal_currency($currency))
 			$amount *= 100;
 
 		$charge = Stripe_Charge::create(array(
