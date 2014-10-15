@@ -5,7 +5,7 @@ jQuery(function($) {
     var 
 		log = !mgStripeCfg.logging || !console ? function() {} : function() { console.log.apply(console, ['mg WC Stripe: '].concat(Array.prototype.slice.call(arguments, 0))); },
 		checkoutForm = $('form.checkout'),
-		stripeTokenHiddenInput = $('<input type="hidden" name="stripeToken">')//,
+		stripeTokenHiddenInput = $('<input type="hidden" name="stripe_token">')//,
 		errorBox = (function() {
 			var 
 				box = $('<ol id="mg-stripe-errorbox"></ol>')
@@ -41,7 +41,7 @@ jQuery(function($) {
 		errorBox.hide();
 
 		// Pass if we have a token
-		if ( checkoutForm.find('[name=stripeToken]').length > 0) {
+		if ( checkoutForm.find('[name=stripe_token]').length > 0) {
 			log('Token found');
 			return true;
 		}

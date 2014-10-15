@@ -2,6 +2,7 @@
 if (!defined('ABSPATH')) exit;
 
 class mg_Gateway_Stripe extends WC_Payment_Gateway {
+
 	private $version = '1.0-beta';
 	private $path;
 	private $url;
@@ -18,7 +19,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
         $this->id = 'mg_stripe';
 		$this->method_title = __('mg Stripe', 'mg_stripe');
 		$this->method_description = __('Process credit cards with Stripe', 'mg_stripe');
-        $this->has_fields      = true;
+        $this->has_fields = true;
 
         $this->init_form_fields();
         $this->init_settings();
@@ -39,10 +40,16 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		$this->publishable_key = $this->use_sandbox ? $test_pub_key : $live_pub_key;
         $this->secret_key = $this->use_sandbox ? $test_secret_key : $live_secret_key;
 		
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id , array($this, 'process_admin_options'));
+		/* 
+		 * Register action hooks 
+		 */
+		
 		add_action('woocommerce_credit_card_form_args', array($this, 'wc_cc_default_args'), 10, 2); 
 		//add_action('woocommerce_credit_card_form_start', array($this, 'error_box'));
 		add_action('woocommerce_credit_card_form_end', array($this, 'inject_js'));
+        
+		add_action('woocommerce_update_options_payment_gateways_' . $this->id , array($this, 'process_admin_options'));
+		
 		add_action('admin_notices', array($this, 'admin_notices'));
     }
 	
@@ -74,13 +81,13 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		return $args;
 	}
 	
-	public function error_box($gateway_id) {
+	/* public function error_box($gateway_id) {
 		if ($gateway_id !== $this->id)
 			return;
 		?>
 			<ol id="mg-stripe-errorbox"></ol>
 		<?php
-	}
+	} */
 	
 	public function inject_js($gateway_id) {
 		if ($gateway_id !== $this->id)
@@ -186,10 +193,10 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	}
 	
 	public function process_payment($order_id) {
-		$result = false;
+		$ok = false;
 		
 		try {
-			$token = isset( $_POST['stripeToken'] ) ? wc_clean( $_POST['stripeToken'] ) : '';
+			$token = isset($_POST['stripe_token']) ? wc_clean($_POST['stripe_token'] ) : '';
 		
 			if (empty($token))
 				throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript', 'mg_stripe'));
@@ -209,7 +216,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 				)
 			);
 			
-			$result = true;
+			$ok = true;
         } catch(Stripe_Error $e) {
 			$body = $e->getJsonBody();
 			$error  = $body['error'];
@@ -228,7 +235,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$this->error($e->getMessage());
 		}
 			
-		return $result ?
+		return $ok ?
 			array(
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
