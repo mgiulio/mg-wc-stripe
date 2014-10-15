@@ -2,10 +2,9 @@ jQuery(function($) {
 		 
 	Stripe.setPublishableKey(mgStripeCfg.publishableKey);
 		
-    var 
-		log = !mgStripeCfg.logging || !console ? function() {} : function() { console.log.apply(console, ['mg WC Stripe: '].concat(Array.prototype.slice.call(arguments, 0))); },
+    var 		
+		token = undefined,
 		checkoutForm = $('form.checkout'),
-		stripeTokenHiddenInput = $('<input type="hidden" name="stripe_token">')//,
 		errorBox = (function() {
 			var 
 				box = $('<ol id="mg-stripe-errorbox"></ol>')
@@ -25,24 +24,21 @@ jQuery(function($) {
 					return box.children().length > 0;
 				}
 			};
-		})()
+		})(),
+		log = !mgStripeCfg.logging || !console ? function() {} : function() { console.log.apply(console, ['mg WC Stripe: '].concat(Array.prototype.slice.call(arguments, 0))); }
 	;
 
 	checkoutForm.on(
 		'checkout_place_order_' + mgStripeCfg.gatewayId, 
 		getStripeToken
 	);
-	$('body').on(
-		'click', '#place_order, form.checkout input:submit', 
-		function() { /* Make sure there's not an old token on the form*/ stripeTokenHiddenInput.detach(); }
-	);
 	
 	function getStripeToken() {
 		errorBox.hide();
 
-		// Pass if we have a token
-		if ( checkoutForm.find('[name=stripe_token]').length > 0) {
+		if (token) {
 			log('Token found');
+			$('<input type="hidden" name="stripe_token">').val(token).appendTo(checkoutForm);
 			return true;
 		}
 		
@@ -90,10 +86,8 @@ jQuery(function($) {
 		unblockUI();
 
 		if (status == 200) {
-			checkoutForm
-				.append(stripeTokenHiddenInput.val(response.id))
-				.submit()
-			;
+			token = response.id;
+			checkoutForm.submit();
 		} else
 			errorBox.push(response.error.message).show();
 	}

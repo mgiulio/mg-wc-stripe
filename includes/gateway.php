@@ -244,7 +244,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$this->error($e->getMessage());
 		}
 			
-		return $payment_completed; ?
+		return $payment_completed ?
 			array(
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
