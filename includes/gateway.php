@@ -193,7 +193,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	}
 	
 	public function process_payment($order_id) {
-		$ok = false;
+		$payment_completed = false;
 		
 		try {
 			$token = isset($_POST['stripe_token']) ? wc_clean($_POST['stripe_token'] ) : '';
@@ -207,35 +207,44 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$transaction_id = $charge['id'];
 			
 			$order->payment_complete($transaction_id);
+			
 			WC()->cart->empty_cart();
+			
 			$order->add_order_note(
 				sprintf(
-					"%s payment completed with Transaction Id of '%s'",
+					__("%s payment completed with Transaction Id of '%s'", 'mg_stripe'),
 					$this->method_title,
 					$transaction_id
 				)
 			);
 			
-			$ok = true;
-        } catch(Stripe_Error $e) {
+			$payment_completed = true;
+        } 
+		catch(Stripe_Error $e) {
+			// Build error message string
 			$body = $e->getJsonBody();
 			$error  = $body['error'];
 			$err_msg = __('Stripe error: ', 'mg_Stripe') . $error['message'];
 			
+			// Deliver error message...
+			
+			// ...to backend...
 			$order->add_order_note(
 				sprintf(
-					__("%s Credit Card Payment Failed with message: '%s'", 'mg_stripe'),
+					__("%s payment failed with message: '%s'", 'mg_stripe'),
 					$this->method_title,
 					$err_msg
 				)
 			);
 			
+			// ...and to frontend and logger
 			$this->error($err_msg);
-		} catch(Exception $e) {
+		} 
+		catch(Exception $e) {
 			$this->error($e->getMessage());
 		}
 			
-		return $ok ?
+		return $payment_completed; ?
 			array(
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
