@@ -25,7 +25,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 
         $this->title = $this->get_option('title');
 		
-		if ($this->get_option('logging') == 'yes')
+		if ($this->get_option('logging') === 'yes')
 			$this->logger = new WC_Logger();
         
 		$this->use_sandbox = $this->get_option('sandbox') == 'yes';
@@ -107,7 +107,8 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			'mgStripeCfg',
 			array(
 				'publishableKey' => $this->publishable_key,
-				'gatewayId' => $this->id
+				'gatewayId' => $this->id,
+				'logging' => $this->get_option('logging') === 'yes'
 			)
 		);
 	}

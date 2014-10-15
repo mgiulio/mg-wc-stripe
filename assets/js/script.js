@@ -3,6 +3,7 @@ jQuery(function($) {
 	Stripe.setPublishableKey(mgStripeCfg.publishableKey);
 		
     var 
+		log = !mgStripeCfg.logging || !console ? function() {} : function() { console.log.apply(console, ['mg WC Stripe: '].concat(Array.prototype.slice.call(arguments, 0))); },
 		checkoutForm = $('form.checkout'),
 		stripeTokenHiddenInput = $('<input type="hidden" name="stripeToken">')//,
 		errorBox = (function() {
@@ -37,12 +38,13 @@ jQuery(function($) {
 	);
 	
 	function getStripeToken() {
-		console.log('getStripeToken');
 		errorBox.hide();
 
 		// Pass if we have a token
-		if ( checkoutForm.find('[name=stripeToken]').length > 0)
+		if ( checkoutForm.find('[name=stripeToken]').length > 0) {
+			log('Token found');
 			return true;
+		}
 		
 		blockUI();
 			
@@ -76,13 +78,14 @@ jQuery(function($) {
 		if (cvc.length > 0)
 			tokenCreationArgs.cvc = cvc;
 		
+		log('Asking Stripe for a token...');
 		Stripe.card.createToken(tokenCreationArgs, stripeResponseHandler);
 		
 		return false;
     }
 	
 	function stripeResponseHandler(status, response) {
-		console.log(status, response);
+		log('...Stripe replied with status: ' + status + ' and response : ', response);
 		
 		unblockUI();
 
