@@ -273,7 +273,8 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		$charge = Stripe_Charge::create(array(
 			'currency' => strtolower($currency),
 			'amount' => $amount,
-			'card' => $token
+			'card' => $token,
+			'description' => sprintf(__('%s - Order %s', 'mg_stripe'), esc_html(get_bloginfo('name')), $order->get_order_number())
 		));
     }
 	
