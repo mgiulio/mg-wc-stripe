@@ -204,17 +204,17 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$order = wc_get_order($order_id);
 		
 			$charge = $this->charge_user($order, $token);
-			$transaction_id = $charge['id'];
+			$charge_id = $charge['id'];
 			
-			$order->payment_complete($transaction_id);
+			$order->payment_complete($charge_id);
 			
 			WC()->cart->empty_cart();
 			
 			$order->add_order_note(
 				sprintf(
-					__("%s payment completed with Transaction Id of '%s'", 'mg_stripe'),
+					__("%s payment completed with charge id '%s'", 'mg_stripe'),
 					$this->method_title,
-					$transaction_id
+					$charge_id
 				)
 			);
 			
@@ -268,14 +268,15 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		if (!$this->is_zero_decimal_currency($currency))
 			$amount *= 100;
 			
-		$this->log("Stripe Charge: key: $this->secret_key, token: $token, amount: $amount $currency");
-
+		$this->log("Creating a Stripe charge: key: $this->secret_key, token: $token, amount: $amount $currency");
 		$charge = Stripe_Charge::create(array(
 			'currency' => strtolower($currency),
 			'amount' => $amount,
 			'card' => $token,
 			'description' => sprintf(__('%s - Order %s', 'mg_stripe'), esc_html(get_bloginfo('name')), $order->get_order_number())
 		));
+		
+		return $charge;
     }
 	
 	private function error($msg) {
