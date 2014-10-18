@@ -93,7 +93,7 @@ jQuery(function($) {
 			if ((input = $('input[name=stripe_token]')).length > 0)
 				input.val(tokenInfo.token);
 			else
-				$('<input name="stripe_token">').val(tokenInfo.token).appendTo(checkoutForm);
+				$('<input name="stripe_token" type="hidden">').val(tokenInfo.token).appendTo(checkoutForm);
 			
 			return true;
 		}
