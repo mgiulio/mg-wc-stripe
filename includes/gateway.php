@@ -204,6 +204,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$order = wc_get_order($order_id);
 		
 			$charge = $this->charge_user($order, $token);
+			$this->log("Stripe charge created: " . print_r($charge, true));
 			$charge_id = $charge['id'];
 			
 			$order->payment_complete($charge_id);
