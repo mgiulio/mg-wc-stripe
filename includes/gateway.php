@@ -265,6 +265,11 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	private function charge_user($order, $token) {
 		if (!class_exists('Stripe'))
 			require_once $this->path['includes'] . 'lib/stripe-php/lib/Stripe.php';
+		else {
+			$reflection = new ReflectionClass('Stripe'); 
+			$version = Stripe::VERSION; 
+			$this->log('Found another instance of the Stripe class: Version = ' . $version . ' @ ' . $reflection->getFileName()); // https://github.com/stripe/stripe-php/issues/54
+		}
 
 		Stripe::setApiKey($this->secret_key);
 		
