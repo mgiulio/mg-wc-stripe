@@ -163,7 +163,12 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			'logging' => array(
                 'title'       => __('Logging', 'mg_stripe'),
                 'type'        => 'checkbox',
-                'label'       => __('Turn on logging to troubleshot problems', 'mg_stripe'),
+                'label'       => 
+					sprintf(
+						__('Turn on logging to troubleshot problems. The log file is <code>%s</code> and can be viewed in the <a href="%s">WC system Status/Log</a> page', 'mg_stripe'), 
+						wc_get_log_file_path($this->id),
+						admin_url('admin.php?page=wc-status&tab=logs')
+					),
                 'default'     => 'no'
             )
        );
@@ -316,7 +321,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	
 	private function log($msg) {
 		if ($this->logger)
-			$this->logger->add('mg_stripe', $msg);
+			$this->logger->add($this->id, $msg);
 	}
 	
 }
