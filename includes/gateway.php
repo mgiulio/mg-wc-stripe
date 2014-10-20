@@ -18,7 +18,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
         $this->id = 'mg_stripe';
 		$this->method_title = __('mg Stripe', 'mg_stripe');
-		$this->method_description = __('Process credit cards with Stripe', 'mg_stripe');
+		$this->method_description = __('Process credit cards with Stripe', $this->id);
         $this->has_fields = true;
 
         $this->init_form_fields();
@@ -58,7 +58,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
 		if (!$this->use_sandbox && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
             $msgs[] = sprintf(
-				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', 'mg_stripe'), 
+				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', $this->id), 
 				$this->method_title, 
 				admin_url('admin.php?page=wc-settings&tab=checkout')
 			);
@@ -102,7 +102,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		);
 		
 		wp_enqueue_script(
-			'mg_stripe', 
+			$this->id, 
 			$this->url['assets'] . 'js/script.js', 
 			array('jquery', 'stripe_js'), 
 			$this->version, 
@@ -110,7 +110,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		);
 		
 		wp_localize_script(
-			'mg_stripe',
+			$this->id,
 			'mgStripeCfg',
 			array(
 				'publishableKey' => $this->publishable_key,
@@ -123,49 +123,49 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
     public function init_form_fields() {
 		$this->form_fields = array(
             'enabled' => array(
-                'title'       => __('Enable/Disable', 'mg_stripe'),
+                'title'       => __('Enable/Disable', $this->id),
                 'type'        => 'checkbox',
-                'label'       => __('Enable gateway', 'mg_stripe'),
+                'label'       => __('Enable gateway', $this->id),
                 'default'     => 'no'
             ),
 			'test_secret_key' => array(
-                'title'       => __('Stripe API Test Secret key', 'mg_stripe'),
+                'title'       => __('Stripe API Test Secret key', $this->id),
                 'type'        => 'text',
                 'default'     => ''
             ),
             'test_pub_key' => array(
-                'title'       => __('Stripe API Test Publishable key', 'mg_stripe'),
+                'title'       => __('Stripe API Test Publishable key', $this->id),
                 'type'        => 'text',
                 'default'     => ''
             ),
             'live_secret_key' => array(
-                'title'       => __('Stripe API Live Secret key', 'mg_stripe'),
+                'title'       => __('Stripe API Live Secret key', $this->id),
                 'type'        => 'text',
                 'default'     => ''
             ),
             'live_pub_key' => array(
-                'title'       => __('Stripe API Live Publishable key', 'mg_stripe'),
+                'title'       => __('Stripe API Live Publishable key', $this->id),
                 'type'        => 'text',
                 'default'     => ''
             ),
 			'title' => array(
-                'title'       => __('Title', 'mg_stripe'),
+                'title'       => __('Title', $this->id),
                 'type'        => 'text',
-                'description' => __('This controls the title which the user sees during checkout.', 'mg_stripe'),
-                'default'     => __('Credit Card  with Stripe', 'mg_stripe')
+                'description' => __('This controls the title which the user sees during checkout.', $this->id),
+                'default'     => __('Credit Card  with Stripe', $this->id)
             ),
 			'sandbox' => array(
-                'title'       => __('Testing', 'mg_stripe'),
+                'title'       => __('Testing', $this->id),
                 'type'        => 'checkbox',
-                'label'       => __('Turn on testing with Stripe sandbox', 'mg_stripe'),
+                'label'       => __('Turn on testing with Stripe sandbox', $this->id),
                 'default'     => 'no'
             ),
 			'logging' => array(
-                'title'       => __('Logging', 'mg_stripe'),
+                'title'       => __('Logging', $this->id),
                 'type'        => 'checkbox',
                 'label'       => 
 					sprintf(
-						__('Turn on logging to troubleshot problems. The log file is <code>%s</code> and can be viewed in the <a href="%s">WC system Status/Log</a> page', 'mg_stripe'), 
+						__('Turn on logging to troubleshot problems. The log file is <code>%s</code> and can be viewed in the <a href="%s">WC system Status/Log</a> page', $this->id), 
 						wc_get_log_file_path($this->id),
 						admin_url('admin.php?page=wc-status&tab=logs')
 					),
@@ -204,7 +204,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			$token = isset($_POST['stripe_token']) ? wc_clean($_POST['stripe_token'] ) : '';
 		
 			if (empty($token))
-				throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript', 'mg_stripe'));
+				throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript', $this->id));
 		
 			$order = wc_get_order($order_id);
 		
@@ -218,7 +218,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			
 			$order->add_order_note(
 				sprintf(
-					__("%s payment completed with charge id '%s'", 'mg_stripe'),
+					__("%s payment completed with charge id '%s'", $this->id),
 					$this->method_title,
 					$charge_id
 				)
@@ -230,14 +230,14 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			// Build error message string
 			$body = $e->getJsonBody();
 			$error  = $body['error'];
-			$err_msg = __('Stripe error: ', 'mg_Stripe') . $error['message'];
+			$err_msg = __('Stripe error: ', $this->id) . $error['message'];
 			
 			// Deliver error message...
 			
 			// ...to backend...
 			$order->add_order_note(
 				sprintf(
-					__("%s payment failed with message: '%s'", 'mg_stripe'),
+					__("%s payment failed with message: '%s'", $this->id),
 					$this->method_title,
 					$err_msg
 				)
@@ -279,7 +279,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			'currency' => strtolower($currency),
 			'amount' => $amount,
 			'card' => $token,
-			'description' => sprintf(__('%s - Order %s', 'mg_stripe'), esc_html(get_bloginfo('name')), $order->get_order_number())
+			'description' => sprintf(__('%s - Order %s', $this->id), esc_html(get_bloginfo('name')), $order->get_order_number())
 		));
 		
 		return $charge;
