@@ -12,7 +12,7 @@ Striper for WooCommerce allows your users to pay via Stripe.
 
 == Description ==
 
-The Stripe plugin extends WooCommerce allowing you to take payments directly on your store via Stripe’s API. Stripe is available in the United States, Canada, the UK, Australia, Belgium, France, Germany, Ireland, The Netherlands and more
+The Stripe plugin extends WooCommerce allowing you to take payments directly on your store via Stripe’s API. 
 
 WooCommerce version requisites:
 
@@ -32,6 +32,8 @@ Using the wc filter 'woocommerce_credit_card_form_fields'. must preserve fields
 5. Select "Striper"
 6. Check the Enable/Disable Checkbox.
 7. Enter the settings that you would like you to use
+
+== FAQ ==
 
 == Changelog ==
 
