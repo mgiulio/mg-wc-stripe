@@ -3,7 +3,7 @@
 Plugin Name: mg wc Stripe
 Plugin URI: http://mgiulio.info/projects/mg-wc-stripe
 Description: Stripe payment gateway for WooCommerce
-Version: 1.0-private-beta
+Version: 1.0-beta-pvt
 Author: Giulio 'mgiulio' Mainardi
 Author URI: http://mgiulio.info
 License: GPL2
