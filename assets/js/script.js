@@ -25,7 +25,7 @@ jQuery(function($) {
 				}
 			};
 		})(),
-		log = !mgStripeCfg.logging || !console ? function() {} : function() { console.log.apply(console, ['mg WC Stripe:'].concat(Array.prototype.slice.call(arguments, 0))); }
+		log = !mgStripeCfg.logging || typeof console === undefined || !console.log ? function() {} : function() { console.log.apply(console, ['mg WC Stripe:'].concat(Array.prototype.slice.call(arguments, 0))); }
 	;
 
 	checkoutForm.on(
