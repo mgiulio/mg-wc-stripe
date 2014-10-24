@@ -17,7 +17,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		$this->supports[] = 'default_credit_card_form';
 		
         $this->id = 'mg_stripe';
-		$this->method_title = __('mg Stripe', 'mg_stripe');
+		$this->method_title = __('mg Stripe', $this->id);
 		$this->method_description = __('Process credit cards with Stripe', $this->id);
         $this->has_fields = true;
 
