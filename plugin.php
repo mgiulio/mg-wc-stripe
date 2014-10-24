@@ -13,8 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class mg_wc_Stripe {
 
+	public $text_domain = 'mg_stripe';
+
 	public function __construct() {
+		add_action('init', array($this, 'setup_i18n'));
+		
 		add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'plugin_action_links'));
+		
 		add_action('plugins_loaded', array($this, 'check_requirements'), 0);
 	}
 	
@@ -54,7 +59,11 @@ class mg_wc_Stripe {
 
 		return array_merge( $action_links, $links);
 	}
+	
+	public function setup_i18n() {
+		load_plugin_textdomain($this->text_domain, false, plugin_basename(dirname(__FILE__)) . '/i18n/languages');
+	}
 		
 }
 
-new mg_wc_Stripe();
+$GLOBALS['mg_wc_stripe'] = new mg_wc_Stripe();
