@@ -45,7 +45,7 @@ class mg_wc_Stripe {
 
 	public function notice() {
 		?>
-		<div class="error">mg Stripe gateway didn't register for missing requirements</div>
+		<div class="error"><?php echo __("mg Stripe gateway didn't register for missing requirements", $this->text_domain); ?></div>
 		<?php
 	}
 	
