@@ -6,36 +6,37 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://mgiulio.info/contact\n"
 "POT-Creation-Date: 2014-10-29 08:02:33+00:00\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2014-10-29 10:05+0100\n"
+"Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
-"X-Generator: grunt-wp-i18n 0.4.9\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: it_IT\n"
 
 #: includes/gateway.php:29
 msgid "mg Stripe"
-msgstr ""
+msgstr "mg Stripe"
 
 #: includes/gateway.php:30
 msgid "Process credit cards with Stripe"
-msgstr ""
+msgstr "Acetta carte di credito via Stripe"
 
 #: includes/gateway.php:70
 msgid ""
-"%s sandbox testing is disabled and can performe live transactions but the "
-"<a href=\"%s\">force SSL option</a> is disabled; your checkout is not "
-"secure! Please enable SSL and ensure your server has a valid SSL "
-"certificate."
+"%s sandbox testing is disabled and can performe live transactions but the <a "
+"href=\"%s\">force SSL option</a> is disabled; your checkout is not secure! "
+"Please enable SSL and ensure your server has a valid SSL certificate."
 msgstr ""
 
 #: includes/gateway.php:135
 msgid "Enable/Disable"
-msgstr ""
+msgstr "Abilita/Disabilita"
 
 #: includes/gateway.php:137
 msgid "Enable gateway"
-msgstr ""
+msgstr "Abilita gateway"
 
 #: includes/gateway.php:141
 msgid "Stripe API Test Secret key"
@@ -55,23 +56,23 @@ msgstr ""
 
 #: includes/gateway.php:161
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: includes/gateway.php:163
 msgid "This controls the title which the user sees during checkout."
-msgstr ""
+msgstr "Il titolo che l'utente vede durenate il checkout"
 
 #: includes/gateway.php:164
 msgid "Credit Card  with Stripe"
-msgstr ""
+msgstr "Carta di credito con Stripe"
 
 #: includes/gateway.php:167
 msgid "Testing"
-msgstr ""
+msgstr "Testing"
 
 #: includes/gateway.php:169
 msgid "Turn on testing with Stripe sandbox"
-msgstr ""
+msgstr "Abilita il testing con il sandbox di Stripe"
 
 #: includes/gateway.php:173
 msgid "Logging"
@@ -79,35 +80,40 @@ msgstr ""
 
 #: includes/gateway.php:177
 msgid ""
-"Turn on logging to troubleshot problems. The log file is <code>%s</code> "
-"and can be viewed in the <a href=\"%s\">WC system Status/Log</a> page"
+"Turn on logging to troubleshot problems. The log file is <code>%s</code> and "
+"can be viewed in the <a href=\"%s\">WC system Status/Log</a> page"
 msgstr ""
+"Abilita il logging per individuare i problemi. Il file log è in <code>%s</"
+"code> e può anche essere consultato nella pagina <a href=\"%s\">WC system "
+"Status/Log</a>"
 
 #: includes/gateway.php:216
 msgid ""
-"Please make sure your card details have been entered correctly and that "
-"your browser supports JavaScript"
+"Please make sure your card details have been entered correctly and that your "
+"browser supports JavaScript"
 msgstr ""
+"Assicurati che i dati della tua carta di credito sono corretti e che il tuo "
+"browser supporta JavaScript"
 
 #: includes/gateway.php:230
 msgid "%s payment completed with charge id '%s'"
-msgstr ""
+msgstr "%s pagamento completato con charge id '%s'"
 
 #: includes/gateway.php:242
 msgid "Stripe error: "
-msgstr ""
+msgstr "Errore Stripe"
 
 #: includes/gateway.php:249
 msgid "%s payment failed with message: '%s'"
-msgstr ""
+msgstr "%s pagamento fallito con messagio: '%s'"
 
 #: includes/gateway.php:296
 msgid "%s - Order %s"
-msgstr ""
+msgstr "%s - Ordine %s"
 
 #: plugin.php:58
 msgid "mg Stripe gateway didn't register for missing requirements"
-msgstr ""
+msgstr "Il gateway mg Stripe non è stato registrato per mancanza di requisiti"
 
 #: plugin.php:67
 msgid "View Settings"
