@@ -17,7 +17,7 @@ class mg_wc_Stripe {
 
 	public function __construct() {
 		$this->cfg['gateway_id'] = 'mg_wc_stripe';
-		$this->cfg['text_domain'] = $this->cfg['gateway_id'];
+		$this->cfg['text_domain'] = 'mg-wc-stripe';
 	
 		add_action('init', array($this, 'setup_i18n'));
 		
@@ -71,7 +71,16 @@ class mg_wc_Stripe {
 	}
 	
 	public function setup_i18n() {
-		load_plugin_textdomain($this->cfg['text_domain'], false, plugin_basename(dirname(__FILE__)) . '/i18n/languages');
+		add_filter('plugin_locale', array($this, 'set_test_locale'), 10, 2);
+		$loaded = load_plugin_textdomain($this->cfg['text_domain'], false, plugin_basename(dirname(__FILE__)) . '/i18n/languages');
+		trigger_error(print_r($loaded, true));
+	}
+	
+	public function set_test_locale($locale, $domain) {
+		if ($domain === $this->cfg['text_domain'])
+			$locale = 'it_IT';
+		
+		return $locale;
 	}
 		
 }

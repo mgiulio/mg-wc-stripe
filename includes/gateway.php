@@ -16,7 +16,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		$this->cfg = array(
 			'gateway_id' => 'mg_wc_stripe'
 		);
-		$this->cfg['text_domain'] = $this->cfg['gateway_id'];
+		$this->cfg['text_domain'] = 'mg-wc-stripe';
 		
 		$this->cfg = apply_filters("{$this->cfg['gateway_id']}_gateway_cfg", $this->cfg);
 		
@@ -67,7 +67,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 		
 		if (!$this->use_sandbox && get_option('woocommerce_force_ssl_checkout') == 'no' && $this->enabled == 'yes')
             $msgs[] = sprintf(
-				__('%s sandbox testing is disabled and can performe live transactions but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', $this->cfg['text_domain']), 
+				__('%s is in live mode but the <a href="%s">force SSL option</a> is disabled; your checkout is not secure! Please enable SSL and ensure your server has a valid SSL certificate.', $this->cfg['text_domain']), 
 				$this->method_title, 
 				admin_url('admin.php?page=wc-settings&tab=checkout')
 			);
@@ -161,7 +161,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
                 'title'       => __('Title', $this->cfg['text_domain']),
                 'type'        => 'text',
                 'description' => __('This controls the title which the user sees during checkout.', $this->cfg['text_domain']),
-                'default'     => __('Credit Card  with Stripe', $this->cfg['text_domain'])
+                'default'     => __('Credit Card with Stripe', $this->cfg['text_domain'])
             ),
 			'sandbox' => array(
                 'title'       => __('Testing', $this->cfg['text_domain']),
