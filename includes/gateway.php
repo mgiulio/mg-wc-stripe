@@ -239,7 +239,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			// Build error message string
 			$body = $e->getJsonBody();
 			$error  = $body['error'];
-			$err_msg = __('Stripe error: ', $this->cfg['text_domain']) . $error['message'];
+			$err_msg = __('Payment error: ', $this->cfg['text_domain']) . $error['message'];
 			
 			// Deliver error message...
 			
