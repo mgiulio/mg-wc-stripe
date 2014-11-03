@@ -29,3 +29,6 @@ No questions yet.
 
 = 1.0 =
 * Initial release
+
+= 1.1 =
+* Feature: I18N(Translations): provide .pot file and italian translation
