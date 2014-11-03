@@ -208,7 +208,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	
 	public function process_payment($order_id) {
 		$payment_completed = false;
-		
+
 		try {
 			$token = isset($_POST['stripe_token']) ? wc_clean($_POST['stripe_token'] ) : '';
 		
@@ -293,7 +293,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			'currency' => strtolower($currency),
 			'amount' => $amount,
 			'card' => $token,
-			'description' => sprintf(__('%s - Order %s', $this->cfg['text_domain']), esc_html(get_bloginfo('name')), $order->get_order_number())
+			'description' => sprintf(__('%s - Order %s', $this->cfg['text_domain']), esc_html(get_bloginfo('name')), $order->get_order_number()),
 		));
 		
 		return $charge;
