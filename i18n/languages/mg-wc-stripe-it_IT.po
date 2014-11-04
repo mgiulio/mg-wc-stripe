@@ -2,10 +2,10 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: mg wc Stripe 1.0\n"
+"Project-Id-Version: mg wc Stripe 1.1\n"
 "Report-Msgid-Bugs-To: http://mgiulio.info/contact\n"
-"POT-Creation-Date: 2014-11-01 10:25:38+00:00\n"
-"PO-Revision-Date: 2014-11-01 11:26+0100\n"
+"POT-Creation-Date: 2014-11-04 08:42:59+00:00\n"
+"PO-Revision-Date: 2014-11-04 09:47+0100\n"
 "Last-Translator: mgiulio <giulio.mainardi@gmail.com>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: it_IT\n"
