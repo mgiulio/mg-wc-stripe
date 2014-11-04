@@ -208,15 +208,15 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 	
 	public function process_payment($order_id) {
 		$payment_completed = false;
-		
+
 		try {
 			$token = isset($_POST['stripe_token']) ? wc_clean($_POST['stripe_token'] ) : '';
 		
 			if (empty($token))
 				throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript', $this->cfg['text_domain']));
 		
-			$order = wc_get_order($order_id);
-		
+			$order = wc_get_order($order_id);	
+
 			$charge = $this->charge_user($order, $token);
 			$this->log("Stripe charge created: " . print_r($charge, true));
 			$charge_id = $charge['id'];
@@ -239,7 +239,7 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			// Build error message string
 			$body = $e->getJsonBody();
 			$error  = $body['error'];
-			$err_msg = __('Stripe error: ', $this->cfg['text_domain']) . $error['message'];
+			$err_msg = __('Payment error: ', $this->cfg['text_domain']) . $error['message'];
 			
 			// Deliver error message...
 			
@@ -293,7 +293,11 @@ class mg_Gateway_Stripe extends WC_Payment_Gateway {
 			'currency' => strtolower($currency),
 			'amount' => $amount,
 			'card' => $token,
-			'description' => sprintf(__('%s - Order %s', $this->cfg['text_domain']), esc_html(get_bloginfo('name')), $order->get_order_number())
+			'description' => sprintf(__('%s - Order %s', $this->cfg['text_domain']), esc_html(get_bloginfo('name')), $order->get_order_number()),
+			'metadata' => array(
+				'customer_email' => $order->billing_email,
+				'edit_order_url' => get_edit_post_link($order->id, ''),
+			),
 		));
 		
 		return $charge;

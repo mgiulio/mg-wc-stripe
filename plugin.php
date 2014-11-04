@@ -77,7 +77,7 @@ class mg_wc_Stripe {
 	
 	public function set_test_locale($locale, $domain) {
 		if ($domain === $this->cfg['text_domain'])
-			$locale = 'it_IT';
+			$locale = get_locale();
 		
 		return $locale;
 	}

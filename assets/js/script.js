@@ -74,7 +74,14 @@ jQuery(function($) {
 		var tokenArgs = {
 			number: cardNumber, 
 			exp_month: expiryDate.month,
-			exp_year: expiryDate.year
+			exp_year: expiryDate.year,
+			name: $('#billing_first_name').val() + ' ' + $('#billing_last_name').val(),
+			address_line1: $('#billing_address_1').val(),
+			address_line2: $('#billing_address_2').val(),
+			address_city: $('#billing_city').val(),
+			address_state: $('#billing_state').val(),
+			address_zip: $('#billing_postcode').val(),
+			address_country: $('#billing_country').val()
 		};
 		if (cvc.length > 0)
 			tokenArgs.cvc = cvc;

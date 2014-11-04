@@ -94,7 +94,7 @@ msgid "%s payment completed with charge id '%s'"
 msgstr ""
 
 #: build/includes/gateway.php:233 includes/gateway.php:242
-msgid "Stripe error: "
+msgid "Payment error: "
 msgstr ""
 
 #: build/includes/gateway.php:240 includes/gateway.php:249
