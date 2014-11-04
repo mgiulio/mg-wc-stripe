@@ -71,7 +71,7 @@ class mg_wc_Stripe {
 	}
 	
 	public function setup_i18n() {
-		add_filter('plugin_locale', array($this, 'set_test_locale'), 10, 2);
+		//add_filter('plugin_locale', array($this, 'set_test_locale'), 10, 2);
 		$loaded = load_plugin_textdomain($this->cfg['text_domain'], false, plugin_basename(dirname(__FILE__)) . '/i18n/languages');
 	}
 	
